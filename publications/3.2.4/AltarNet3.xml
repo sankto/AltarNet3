@@ -1,0 +1,1741 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AltarNet3</name>
+    </assembly>
+    <members>
+        <member name="T:AltarNet.FtpHandler">
+            <summary>
+            Allow the user to select a target on an FTP server, be it a directory or a file, and request or query on it.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpHandler.Options">
+            <summary>
+            Get the global options that will, if not overridden, be used for each requests.
+            </summary>
+        </member>
+        <member name="M:AltarNet.FtpHandler.#ctor(System.String,System.String,System.String,AltarNet.FtpOptions)">
+            <summary>
+            Create an FTP Handler, with credentials and options.
+            </summary>
+            <param name="host">The host. example : "ftp://myhost.com"</param>
+            <param name="user">The username for the credentials</param>
+            <param name="pass">The password for the credentials</param>
+            <param name="options">The options</param>
+        </member>
+        <member name="M:AltarNet.FtpHandler.#ctor(System.String,System.Net.NetworkCredential,AltarNet.FtpOptions)">
+            <summary>
+            Create an FTP Handler, with credentials and options.
+            </summary>
+            <param name="host">The host. example : "ftp://myhost.com"</param>
+            <param name="creds">The credentials</param>
+            <param name="options">The options</param>
+        </member>
+        <member name="M:AltarNet.FtpHandler.#ctor(AltarNet.FtpOptions)">
+            <summary>
+            Create an FTP Handler, with options.
+            </summary>
+            <param name="options">The options</param>
+        </member>
+        <member name="M:AltarNet.FtpHandler.Select(System.String)">
+            <summary>
+            Create and return a subitem with the given path, with a Target value which ends up being 'HostName + "/" + remotePath'.
+            </summary>
+            <param name="remotePath">The target for the new subitem</param>
+            <returns>The subitem</returns>
+        </member>
+        <member name="M:AltarNet.FtpHandler.TestCredentials(AltarNet.FtpOptions)">
+            <summary>
+            Query a test on the FTP server to see if the credentials are accepted.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>True if successful, false otherwise</returns>
+        </member>
+        <member name="M:AltarNet.FtpHandler.TestCredentials(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query a test on the FTP server to see if the credentials are accepted.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>True if successful, false otherwise</returns>
+        </member>
+        <member name="P:AltarNet.FtpHandler.OnMakeRequest">
+            <summary>
+            Allow the user to customize a request before it is used.
+            </summary>
+        </member>
+        <member name="T:AltarNet.FtpOptions">
+            <summary>
+            Represent the options used for an FTP request.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpOptions.DefaultBufferSize">
+            <summary>
+            The default buffer size, used when downloading or uploading a file. Default is 4096.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpOptions.DefaultConnLimit">
+            <summary>
+            The default connections limit.
+            </summary>
+        </member>
+        <member name="M:AltarNet.FtpOptions.#ctor">
+            <summary>
+            Create an FtpOptions.
+            </summary>
+        </member>
+        <member name="M:AltarNet.FtpOptions.Clone">
+            <summary>
+            Do a shallow copy of these options.
+            </summary>
+            <returns>The copy.</returns>
+        </member>
+        <member name="M:AltarNet.FtpOptions.System#ICloneable#Clone">
+            <summary>
+            Do a shallow copy of these options.
+            </summary>
+            <returns>The copy.</returns>
+        </member>
+        <member name="P:AltarNet.FtpOptions.BufferSize">
+            <summary>
+            Get or set the buffer size, used when downloading or uploading a file.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.UseBinary">
+            <summary>
+            Get or set if the request shall be in binary or ASCII, during downloads or uploads. Defaulted to true.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.UsePassive">
+            <summary>
+            Get or set if the request shall be passive or not.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.KeepAlive">
+            <summary>
+            Get or set if the request shall close or not at the end.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.HostName">
+            <summary>
+            Get or set the hostname, like "ftp://myhost.com".
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.Proxy">
+            <summary>
+            Get or set the proxy.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.Credentials">
+            <summary>
+            Get or set the credentials.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.GroupName">
+            <summary>
+            Get or set the Connection Group Name, best used with KeepAlive activated.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpOptions.ConnectionsLimit">
+            <summary>
+            Get or set the quantity of concurrent connections that can be made.
+            </summary>
+        </member>
+        <member name="T:AltarNet.ProgressMonitorBase">
+            <summary>
+            This class is used when downloading or uploading an FTP file, and must be inherited to be of use.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ProgressMonitorBase.OnInit">
+            <summary>
+            This will be called right after the size is found (or not) and the download / upload is ready to start.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ProgressMonitorBase.Progressed">
+            <summary>
+            This will be called whenever this is progress on the download / upload.
+            </summary>
+        </member>
+        <member name="P:AltarNet.ProgressMonitorBase.Progress">
+            <summary>
+            Get the minute details of the current progress of the download / upload.
+            </summary>
+        </member>
+        <member name="P:AltarNet.ProgressMonitorBase.AskForSize">
+            <summary>
+            If set to true, this will ask for the size of the download / upload.
+            </summary>
+        </member>
+        <member name="T:AltarNet.FtpProgress">
+            <summary>
+            Represent the minute details of the progress of a download or upload.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpProgress.TotalLength">
+            <summary>
+            Get the total length in bytes of the download / upload
+            </summary>
+        </member>
+        <member name="M:AltarNet.FtpProgress.#ctor(System.Int64)">
+            <summary>
+            Create an FtpProgress, with the download / upload length in bytes.
+            </summary>
+            <param name="len">The total length in bytes of the download / upload</param>
+        </member>
+        <member name="M:AltarNet.FtpProgress.Percent">
+            <summary>
+            Return the percent done of the current download / upload.
+            </summary>
+            <returns>The percent, or -1 if TotalLength is -1.</returns>
+        </member>
+        <member name="P:AltarNet.FtpProgress.CurrentCount">
+            <summary>
+            Get the current amount of bytes that has been processed.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpProgress.BytesPerSecond">
+            <summary>
+            When BytesPerSecondUpdated isn't null, get the transfert speed in bytes per second.
+            </summary>
+        </member>
+        <member name="P:AltarNet.FtpProgress.IsCompleted">
+            <summary>
+            Get the completion state of the current progress.
+            </summary>
+        </member>
+        <member name="E:AltarNet.FtpProgress.BytesPerSecondUpdated">
+            <summary>
+            The event is called every second, updating the BytesPerSecond property with the current transfert rate.
+            </summary>
+        </member>
+        <member name="T:AltarNet.FtpRemoteItem">
+            <summary>
+            Describe a path to an FTP element, weither it be a directory or a file. Actions can be taken on it's target.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpRemoteItem.Handler">
+            <summary>
+            Get the FtpHandler that initialy created the item.
+            </summary>
+        </member>
+        <member name="F:AltarNet.FtpRemoteItem.Parent">
+            <summary>
+            Get the parent Item which has selected this item.
+            </summary>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Clone">
+            <summary>
+            Do a shallow copy of this item.
+            </summary>
+            <returns>The copy.</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.System#ICloneable#Clone">
+            <summary>
+            Do a shallow copy of this item.
+            </summary>
+            <returns>The copy.</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Select(System.String)">
+            <summary>
+            Create and return a subitem with the given path, with a Target value which ends up being 'Target + "/" + remotePath'.
+            </summary>
+            <param name="remotePath">The target for the new subitem</param>
+            <returns>The subitem</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Exists(System.String,System.Boolean,AltarNet.FtpOptions)">
+            <summary>
+            Query is the named item exists in the targeted directory, weither the named item be a directory or a file.
+            </summary>
+            <param name="name">The file/directory to look for</param>
+            <param name="caseSensitive">Weither case sensitivity should be observed or not</param>
+            <param name="options">The query-specific options</param>
+            <returns>True if the item is found, false otherwise</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Exists(System.String,System.Threading.CancellationToken,System.Boolean,AltarNet.FtpOptions)">
+            <summary>
+            Query is the named item exists in the targeted directory, weither the named item be a directory or a file.
+            </summary>
+            <param name="name">The file/directory to look for</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="caseSensitive">Weither case sensitivity should be observed or not</param>
+            <param name="options">The query-specific options</param>
+            <returns>True if the item is found, false otherwise</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.List(AltarNet.FtpOptions)">
+            <summary>
+            Query the list of files and directories in the targeted directory.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>A list of all the files and directories</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.List(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query the list of files and directories in the targeted directory.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A list of all the files and directories</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.ListDetails(AltarNet.FtpOptions)">
+            <summary>
+            Query the details of a list of files and directories in the targeted directory.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>A detailed list of all the files and directories</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.ListDetails(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query the details of a list of files and directories in the targeted directory.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A detailed list of all the files and directories</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Rename(System.String,AltarNet.FtpOptions)">
+            <summary>
+            Request a Rename action on the targeted file or directory.
+            </summary>
+            <param name="newName">The new name for the file or directory</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Rename(System.String,System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Request a Rename action on the targeted file or directory.
+            </summary>
+            <param name="newName">The new name for the file or directory</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DeleteFile(AltarNet.FtpOptions)">
+            <summary>
+            Request a Delete action on the targeted file.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DeleteFile(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Request a Delete action on the targeted file.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.MakeDirectory(AltarNet.FtpOptions)">
+            <summary>
+            Request a MakeDirectory action on the targeted Directory. The target must not exists.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.MakeDirectory(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Request a MakeDirectory action on the targeted Directory. The target must not exists.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.RemoveDirectory(AltarNet.FtpOptions)">
+            <summary>
+            Request a RemoveDirectory action on the targeted Directory. The target must exists.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.RemoveDirectory(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Request a RemoveDirectory action on the targeted Directory. The target must exists.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.PrintWorkingDirectory(AltarNet.FtpOptions)">
+            <summary>
+            Query the Current directory.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>The working directory</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.PrintWorkingDirectory(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query the Current directory.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>The working directory</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.GetFileSize(AltarNet.FtpOptions)">
+            <summary>
+            Query the file size of the target.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>The size of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.GetFileSize(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query the file size of the target.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>The size of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.GetDatestamp(AltarNet.FtpOptions)">
+            <summary>
+            Query the last modified time of the target.
+            </summary>
+            <param name="options">The query-specific options</param>
+            <returns>The last modified time of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.GetDatestamp(System.Threading.CancellationToken,AltarNet.FtpOptions)">
+            <summary>
+            Query the last modified time of the target.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="options">The query-specific options</param>
+            <returns>The last modified time of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadData(AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning an array of bytes.
+            </summary>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full array of bytes of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadData(System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning an array of bytes.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full array of bytes of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadString(AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning a string.
+            </summary>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full string of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadString(System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning a string.
+            </summary>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full string of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadString(System.Text.Encoding,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning a string.
+            </summary>
+            <param name="encode">The encoding to use to reclaim the data into a string</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full string of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.DownloadString(System.Text.Encoding,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file, returning a string.
+            </summary>
+            <param name="encode">The encoding to use to reclaim the data into a string</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The full string of the targeted file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Download(System.String,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be written to</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Download(System.String,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be written to</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Download(System.IO.Stream,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be written to</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Download(System.IO.Stream,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Download action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be written to</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Upload(System.String,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Upload(System.String,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Upload(System.IO.Stream,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Upload(System.IO.Stream,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.UploadWithUniqueName(System.String,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted directory, with a unique, randomly generated name.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The filename of the generated file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.UploadWithUniqueName(System.String,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted directory, with a unique, randomly generated name.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The filename of the generated file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.UploadWithUniqueName(System.IO.Stream,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted directory, with a unique, randomly generated name.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The filename of the generated file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.UploadWithUniqueName(System.IO.Stream,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request a Upload action on the targeted directory, with a unique, randomly generated name.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>The filename of the generated file</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Append(System.String,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request an Append action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Append(System.String,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request an Append action on the targeted file.
+            </summary>
+            <param name="filename">The local file that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Append(System.IO.Stream,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request an Append action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.FtpRemoteItem.Append(System.IO.Stream,System.Threading.CancellationToken,AltarNet.ProgressMonitorBase,AltarNet.FtpOptions)">
+            <summary>
+            Request an Append action on the targeted file.
+            </summary>
+            <param name="stream">The stream that will be read from</param>
+            <param name="cancelToken">The token to cancel the query</param>
+            <param name="progress">The progress monitor</param>
+            <param name="options">The query-specific options</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="P:AltarNet.FtpRemoteItem.Target">
+            <summary>
+            Get the path to the targetted element.
+            </summary>
+        </member>
+        <member name="T:AltarNet.HttpErrorEventArgs">
+            <summary>
+            Represent some informations related to an error while receiving http contexts.
+            </summary>
+        </member>
+        <member name="M:AltarNet.HttpErrorEventArgs.#ctor(System.Exception)">
+            <summary>
+            Create the HttpErrorEventArgs.
+            </summary>
+            <param name="e">The error</param>
+        </member>
+        <member name="P:AltarNet.HttpErrorEventArgs.Error">
+            <summary>
+            The error which occured.
+            </summary>
+        </member>
+        <member name="T:AltarNet.HttpContextEventArgs">
+            <summary>
+            Represent some informations related to newly received http context.
+            </summary>
+        </member>
+        <member name="M:AltarNet.HttpContextEventArgs.#ctor(System.Net.HttpListenerContext)">
+            <summary>
+            Create the HttpContextEventArgs.
+            </summary>
+            <param name="con">The context</param>
+        </member>
+        <member name="P:AltarNet.HttpContextEventArgs.Context">
+            <summary>
+            The received context.
+            </summary>
+        </member>
+        <member name="T:AltarNet.HttpServerHandler">
+            <summary>
+            Represent a simple HTTP server.
+            </summary>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.#ctor(System.String,System.Boolean)">
+            <summary>
+            Create an HTTP server, given the prefixes (ie: "http://localhost:8080") and weither the server start listening immediately.
+            </summary>
+            <param name="prefix">The prefixes (ie: "http://localhost:8080")</param>
+            <param name="andStart">Should the server start now</param>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.#ctor(System.String[],System.Boolean)">
+            <summary>
+            Create an HTTP server, given the prefix (ie: "http://localhost:8080") and weither the server start listening immediately.
+            </summary>
+            <param name="prefixes">The prefix (ie: "http://localhost:8080")</param>
+            <param name="andStart">Should the server start now</param>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.Start">
+            <summary>
+            Start listening. Equivalent to Listen(true). Does nothing if already started.
+            </summary>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.Stop">
+            <summary>
+            Stop listening. Equivalent to Listen(false). Does nothing if already stopped.
+            </summary>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.Listen(System.Boolean)">
+            <summary>
+            Start or stop listening.
+            </summary>
+            <param name="state">if true : Start, otherwise, stop</param>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.OnListenError(System.Exception)">
+            <summary>
+            Overrideable. Called when an error occur while listening.
+            </summary>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.HttpServerHandler.OnRequest(System.Net.HttpListenerContext)">
+            <summary>
+            Overrideable. Called when a request is made to the server.
+            </summary>
+            <param name="context">The context of the request</param>
+        </member>
+        <member name="P:AltarNet.HttpServerHandler.AuthScheme">
+            <summary>
+            Get or set the authentication Schemes.
+            </summary>
+        </member>
+        <member name="E:AltarNet.HttpServerHandler.ListenError">
+            <summary>
+            Called when an error occured while listening.
+            </summary>
+        </member>
+        <member name="E:AltarNet.HttpServerHandler.Requested">
+            <summary>
+            Called when a new request was made to this server.
+            </summary>
+        </member>
+        <member name="T:AltarNet.ArgumentsEventArgs">
+            <summary>
+            Is returned alongside an instance of the ArgumentsReceived event.
+            </summary>
+        </member>
+        <member name="F:AltarNet.ArgumentsEventArgs.Args">
+            <summary>
+            The arguments sent from the non-unique instance.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ArgumentsEventArgs.#ctor(System.String[])">
+            <summary>
+            Create an ArgumentsEventArgs.
+            </summary>
+            <param name="args">The arguments</param>
+        </member>
+        <member name="T:AltarNet.SingleInstance">
+            <summary>
+            Allow the user to check if their application run on a single instance, on the local machine.
+            </summary>
+        </member>
+        <member name="M:AltarNet.SingleInstance.#ctor(System.Int32,System.String[],System.Int32,System.Int32)">
+            <summary>
+            Create a single instance.
+            </summary>
+            <param name="port">The port to listen to locally</param>
+            <param name="args">Optional, the arguments to send if the instance is non-unique</param>
+            <param name="readTimeout">A timeout value in milliseconds until a non-unique client is automatically disconnected</param>
+            <param name="tryTimeout">A timeout value in milliseconds that represent the amout of time it will try to find and connect to the unique instance, if any</param>
+        </member>
+        <member name="M:AltarNet.SingleInstance.Dispose">
+            <summary>
+            Dispose of the single instance.
+            </summary>
+        </member>
+        <member name="P:AltarNet.SingleInstance.IsSingle">
+            <summary>
+            Get the state of the instance.
+            </summary>
+        </member>
+        <member name="E:AltarNet.SingleInstance.ArgumentsReceived">
+            <summary>
+            The event is called when a non-unique instance send it's arguments to the unique one.
+            </summary>
+        </member>
+        <member name="T:AltarNet.SslHelper">
+            <summary>
+            This class helps with the creation, obtention and removal of self-signed SSL Certificates.
+            </summary>
+        </member>
+        <member name="M:AltarNet.SslHelper.GetCertificatesName">
+            <summary>
+            This will iterate through the store's certificates and return their subject name.
+            </summary>
+            <returns>An iteration of all certificates' subject name</returns>
+        </member>
+        <member name="M:AltarNet.SslHelper.RemoveCertificate(System.String)">
+            <summary>
+            This will remove a named SSL Certificate if it exist. Do nothing otherwise.
+            </summary>
+            <param name="subjectName"></param>
+        </member>
+        <member name="M:AltarNet.SslHelper.GetOrCreateSelfSignedCertificate(System.String,System.Nullable{System.DateTime})">
+            <summary>
+            This method of convenience allow the user to get a previously created SSL Self-Signed Certificate. It will create it if it doesn't exist. Example of SubjectName : CN=altarapp.com
+            </summary>
+            <param name="subjectName">The certificate's subject name</param>
+            <returns>The ssl certificate</returns>
+            <param name="expiration">The expiration date for the certificate (Default to now + 25 years)</param>
+        </member>
+        <member name="T:AltarNet.TcpClientHandler">
+            <summary>
+            Represent a TCP client, to connect to a server.
+            </summary>
+        </member>
+        <member name="T:AltarNet.ITcpHandler">
+            <summary>
+            Represent the interface both the TCP server and TCP client must adhere to.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ITcpHandler.ReportDisconnection(AltarNet.TcpClientInfo)">
+            <summary>
+            Called when a (or the) client is disconnected.
+            </summary>
+            <param name="info">The client</param>
+        </member>
+        <member name="M:AltarNet.ITcpHandler.ReportPacketFragment(AltarNet.TcpClientInfo,AltarNet.TcpFragment)">
+            <summary>
+            Called when a packet fragment is received.
+            </summary>
+            <param name="info">The client</param>
+            <param name="packet">The packet fragment received</param>
+        </member>
+        <member name="M:AltarNet.ITcpHandler.ReportReceiveError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Called when an exception occur while receiving messages.
+            </summary>
+            <param name="info">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.ITcpHandler.ReportSslError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Called when an exception occur while starting an SSL connection.
+            </summary>
+            <param name="info">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.ITcpHandler.ReportSslValidate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Only called by a client.
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The policy errors</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.#ctor(System.Net.IPAddress,System.Int32,System.Int32)">
+            <summary>
+            Create the client.
+            </summary>
+            <param name="addr">The address to connect to</param>
+            <param name="port">The port to connect to</param>
+            <param name="buffersize">The buffersize for reading messages</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.Connect">
+            <summary>
+            Attempt a connection.
+            </summary>
+            <returns>True if successful, false otherwise</returns>
+            <remarks>If it fail, check the LastConnectError property to see the details of the failure.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ConnectAsync">
+            <summary>
+            Attempt a connection.
+            </summary>
+            <returns>True if successful, false otherwise</returns>
+            <remarks>If it fail, check the LastConnectError property to see the details of the failure.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.Disconnect">
+            <summary>
+            Disconnect the client, if connected. Do nothing otherwise.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.Send(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.SendAsync(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.SendFile(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.SendFileAsync(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <returns>A Task</returns>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnDisconnect">
+            <summary>
+            Overrideable. Called when the client is disconnected.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnReceiveError(System.Exception)">
+            <summary>
+            Overrideable. Called when an error occur while receiving messages.
+            </summary>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnSslError(System.Exception)">
+            <summary>
+            Overrideable. Called when an error occur while starting the SSL connection.
+            </summary>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnReceiveFragment(AltarNet.TcpFragment)">
+            <summary>
+            Overrideable. Called when a fragment of a packet is received.
+            </summary>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnReceiveFull(System.Byte[])">
+            <summary>
+            Overrideable. Called when a packet is completed and is desired to be whole.
+            </summary>
+            <param name="data">The whole packet</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.OnSslValidationRequest(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Overrideable. Called when an SSL connection is being validated.
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The policy errors</param>
+            <returns></returns>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ReportDisconnection(AltarNet.TcpClientInfo)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="info">The disconnected client</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ReportPacketFragment(AltarNet.TcpClientInfo,AltarNet.TcpFragment)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="info">The client</param>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ReportReceiveError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="info">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ReportSslError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="info">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpClientHandler.ReportSslValidate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The policy errors</param>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.ServerAddress">
+            <summary>
+            The server the client is set to connect to.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.Port">
+            <summary>
+            The port the client is set to connect to.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.InfoHandler">
+            <summary>
+            The informations handler of the client.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.LastConnectError">
+            <summary>
+            Get the exception generated if a connection fail.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.BufferSize">
+            <summary>
+            Get the buffer size for reading messages. Default : TcpClientInfo.BUFFERSIZE
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.SSLTargetHost">
+            <summary>
+            Get or set the target host used with an SSL connection. Disabled if null.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.ObtainFullPackets">
+            <summary>
+            Get or set weither packets are buffered in memory. If the event ReceivedFull is non-null, this is ignored. Only useful in the case that you are overriding OnReceiveFull.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientHandler.IsLengthInOneFrame">
+            <summary>
+            Get or set weither the length of a packet is combined into one with the data.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.ReceivedFragment">
+            <summary>
+            Called when a fragment of a packet is received.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.ReceivedFull">
+            <summary>
+            Called when a packet is completed and is desired to be whole.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.Disconnected">
+            <summary>
+            Called when the client is disconnected.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.ReceiveError">
+            <summary>
+            Called when an error occur while receiving messages.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.SslError">
+            <summary>
+            Called when an error occur while starting the SSL connection.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpClientHandler.SslValidationRequested">
+            <summary>
+            Called when an SSL connection is being validated.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpClientInfo">
+            <summary>
+            Represent and manage the informations of a client, such as receiving, parsing and sending data.
+            </summary>
+        </member>
+        <member name="F:AltarNet.TcpClientInfo.BUFFERSIZE">
+            <summary>
+            The default reading buffer size. Default is 4*1024.
+            </summary>
+        </member>
+        <member name="F:AltarNet.TcpClientInfo.FILEBUFFERSIZE">
+            <summary>
+            The default reading buffer size for file transfer. Default is 8*1024.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpClientInfo.Send(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+        </member>
+        <member name="M:AltarNet.TcpClientInfo.SendAsync(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.TcpClientInfo.SendFile(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath"></param>
+            <param name="preBuffer"></param>
+            <param name="postBuffer"></param>
+            <param name="withLengthPrefixed"></param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set ReadNextAsLong to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpClientInfo.SendFileAsync(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath"></param>
+            <param name="preBuffer"></param>
+            <param name="postBuffer"></param>
+            <param name="withLengthPrefixed"></param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set ReadNextAsLong to true to do so.</remarks>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.TcpClientInfo.Disconnect">
+            <summary>
+            Disconnect the client. Do nothing if already disconnected.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.Parent">
+            <summary>
+            Get the parent handler.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.Client">
+            <summary>
+            Get the socket.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.BufferSize">
+            <summary>
+            Get the buffer size for reading messages. Default : BUFFERSIZE
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.ReadNextAsLong">
+            <summary>
+            If set to true, the next time a packet begin, it will read the length of it as 8 bytes (long) instead of 4 (int).
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.ReadNextNotBuffered">
+            <summary>
+            If set to true, the next time a packet begin, it will not call the ReceivedFull event until the next packet.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.Tag">
+            <summary>
+            Get or set a convenient object which can contains anything you want.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.EnableSsl">
+            <summary>
+            Get the value determining weither it will use SSL or not. SSLServerCertificate must not be null when set to true.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.SSLServerCertificate">
+            <summary>
+            Get the certificate to use for SSL connections.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.SSLTargetHost">
+            <summary>
+            Get the target host used with an SSL connection. Disabled if null.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.IsLengthInOneFrame">
+            <summary>
+            Get or set weither the length of a packet is combined into one with the data.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpClientInfo.Timeout">
+            <summary>
+            Get or set the amount in milliseconds the connection will stay alive without receiving anything. Setting it at 0 or less disable it. This supersede a TcpServerHandler's ReadTimeout value.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpFragment">
+            <summary>
+            Represent a portion of one TCP message.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpFragment.WriteToStream(System.IO.Stream)">
+            <summary>
+            This method automatically take the Data, CurrentOffset and CurrentReadCount properties and write the fragment's data into a given stream.
+            </summary>
+            <param name="stream">The stream to write to</param>
+        </member>
+        <member name="M:AltarNet.TcpFragment.GetPercentDone">
+            <summary>
+            Get the percentage of the message that has been received so far.
+            </summary>
+            <returns>The percent, between 0 and 100</returns>
+        </member>
+        <member name="P:AltarNet.TcpFragment.FullLength">
+            <summary>
+            Gets the full length.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.CumulativeReadCount">
+            <summary>
+            Get the cumulative read count for each pass. Also represent the current progress toward FullLength.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.CurrentReadCount">
+            <summary>
+            Get the amount of bytes the current fragment has read. Not to be confused with CumulativeReadCount.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.CurrentOffset">
+            <summary>
+            Get the offset to start reading into Data.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.LengthFound">
+            <summary>
+            Get a value indicating whether the Length of the message has been read.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.Completed">
+            <summary>
+            Get a value indicating whether the message is fully read.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.Data">
+            <summary>
+            Get the array of bytes from which the fragment has informations. To be used with CurrentOffset and CurrentReadCount to determinate the fragment.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragment.Tag">
+            <summary>
+            Get or set a convenient object which can contains anything you want.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpFragmentReceivedEventArgs">
+            <summary>
+            Represent the informations sent with the ReceivedFragment event.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpFragmentReceivedEventArgs.#ctor(AltarNet.TcpClientInfo,AltarNet.TcpFragment)">
+            <summary>
+            Create the TcpFragmentReceivedEventArgs.
+            </summary>
+            <param name="info">The client</param>
+            <param name="packet">The packet fragment received</param>
+        </member>
+        <member name="P:AltarNet.TcpFragmentReceivedEventArgs.Client">
+            <summary>
+            The client who sent the packet.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpFragmentReceivedEventArgs.Packet">
+            <summary>
+            The packet which was received.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpReceivedEventArgs">
+            <summary>
+            Represent the informations sent with the ReceivedFull event.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpReceivedEventArgs.#ctor(AltarNet.TcpClientInfo,System.Byte[])">
+            <summary>
+            Create the TcpReceivedEventArgs.
+            </summary>
+            <param name="info">The client</param>
+            <param name="data">The full data</param>
+        </member>
+        <member name="P:AltarNet.TcpReceivedEventArgs.Client">
+            <summary>
+            The client who sent the packet.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpReceivedEventArgs.Data">
+            <summary>
+            The full array of bytes of the packet.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpEventArgs">
+            <summary>
+            Represent some generic informations related to a TCP event.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpEventArgs.#ctor(AltarNet.TcpClientInfo)">
+            <summary>
+            Create the TcpEventArgs.
+            </summary>
+            <param name="info">The client</param>
+        </member>
+        <member name="P:AltarNet.TcpEventArgs.Client">
+            <summary>
+            The client involved.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpSslValidateEventArgs">
+            <summary>
+            Represent the informations related to the validation of a client's SSL connection.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpSslValidateEventArgs.#ctor(AltarNet.TcpClientInfo,System.Nullable{System.Boolean})">
+            <summary>
+            Create the TcpEventArgs.
+            </summary>
+            <param name="info">The client</param>
+            <param name="accepted">The acceptance state</param>
+        </member>
+        <member name="P:AltarNet.TcpSslValidateEventArgs.Accepted">
+            <summary>
+            Get or set weither the SSL connection is valid. Set to null to let the default validator do his own works.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpSslValidateEventArgs.Client">
+            <summary>
+            The client involved.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpErrorEventArgs">
+            <summary>
+            Represent some informations related to an error while reading messages.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpErrorEventArgs.#ctor(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Create the TcpErrorEventArgs.
+            </summary>
+            <param name="info">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="P:AltarNet.TcpErrorEventArgs.Client">
+            <summary>
+            The client involved.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpErrorEventArgs.Error">
+            <summary>
+            The error which occured.
+            </summary>
+        </member>
+        <member name="T:AltarNet.TcpServerHandler">
+            <summary>
+            Represent a TCP server, accepting clients.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.#ctor(System.Net.IPAddress,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Create a TCP server, with the given address, port, read timeout and backlog limit.
+            </summary>
+            <param name="address">The address to listen</param>
+            <param name="port">The port to listen</param>
+            <param name="readTimeout">The default read timeout</param>
+            <param name="backlog">The backlog</param>
+            <param name="maxClients">The maximum amount of clients. Default to Int.MaxValue</param>
+            <param name="buffersize">The buffer size when reading messages</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.Start">
+            <summary>
+            Start the server so that it accept connections, if it's not already started.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.Stop">
+            <summary>
+            Stop listening for new connections.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.Send(AltarNet.TcpClientInfo,System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes to the chosen client, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="client">The receiving client</param>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendAsync(AltarNet.TcpClientInfo,System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes to the chosen client, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="client">The receiving client</param>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendFile(AltarNet.TcpClientInfo,System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file to a chosen client, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="client">The receiving client</param>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendFileAsync(AltarNet.TcpClientInfo,System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="client">The receiving client</param>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <returns>A Task</returns>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendAll(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes to ALL clients, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendAllFile(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file to all clients, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendAllFileAsync(System.String,System.Byte[],System.Byte[],System.Boolean,System.Boolean)">
+            <summary>
+            Send a whole file to all clients, given a prebuffer and a postbuffer, and if the 8 bytes length is sent before the real message.
+            </summary>
+            <param name="filepath">The path to the file</param>
+            <param name="preBuffer">A prefixed buffer</param>
+            <param name="postBuffer">A suffixed buffer</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <param name="preBufferIsBeforeLength">Weither the prebuffer is placed before the length prefix (if applicable)</param>
+            <returns>A Task</returns>
+            <remarks>If withLengthPrefixed is true, it's important for the receiving end to know that he is receiving a longer a 8 bytes length prefix. For the receiving end and within this class, you can set 'InfoHandler.ReadNextAsLong' to true to do so.</remarks>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.SendAllAsync(System.Byte[],System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Send an array of bytes to ALL clients, given an offset, length and if the 4 bytes length is sent before the real message.
+            </summary>
+            <param name="data">The data to send</param>
+            <param name="offset">The offset of the data</param>
+            <param name="count">The length to read from the data (if null, will take full length)</param>
+            <param name="withLengthPrefixed">if the 4 bytes length is sent before the real message</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.DisconnectClient(AltarNet.TcpClientInfo)">
+            <summary>
+            Disconnect the given client.
+            </summary>
+            <param name="client">The client</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.DisconnectAll">
+            <summary>
+            Disconnect all connected clients.
+            </summary>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnConnect(AltarNet.TcpClientInfo)">
+            <summary>
+            Overrideable. Called when a new connection is made.
+            </summary>
+            <param name="client">The client</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnDisconnect(AltarNet.TcpClientInfo)">
+            <summary>
+            Overrideable. Called when a client is disconnected.
+            </summary>
+            <param name="client">The client</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnReceiveError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Overrideable. Called when an error occur while receiving messages.
+            </summary>
+            <param name="client">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnSslError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Overrideable. Called when an error occur while starting an SSL connection.
+            </summary>
+            <param name="client">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnReceiveFragment(AltarNet.TcpClientInfo,AltarNet.TcpFragment)">
+            <summary>
+            Overrideable. Called when a fragment of a packet is received.
+            </summary>
+            <param name="client">The client</param>
+            <param name="packet">The received packet</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnReceiveFull(AltarNet.TcpClientInfo,System.Byte[])">
+            <summary>
+            Overrideable. Called when a packet is completed and is desired to be received whole.
+            </summary>
+            <param name="client">The client</param>
+            <param name="data">The whole packet</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.OnMaxClientsReach(AltarNet.TcpClientInfo)">
+            <summary>
+            Overrideable. Called when the maximum amount of clients is reached.
+            </summary>
+            <param name="client">The client</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.ReportDisconnection(AltarNet.TcpClientInfo)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="client">The disconnected client</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.ReportPacketFragment(AltarNet.TcpClientInfo,AltarNet.TcpFragment)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="client">The client</param>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.ReportReceiveError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="client">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.ReportSslError(AltarNet.TcpClientInfo,System.Exception)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="client">The client</param>
+            <param name="e">The error</param>
+        </member>
+        <member name="M:AltarNet.TcpServerHandler.ReportSslValidate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Not much useful outside internal callings.
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="certificate">The certificate</param>
+            <param name="chain">The chain</param>
+            <param name="sslPolicyErrors">The policy errors</param>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.IsListening">
+            <summary>
+            Is true if the server is listening for new connections.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.Backlog">
+            <summary>
+            The amount of simultaneous connection attempts the server may have.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.ReadTimeout">
+            <summary>
+            The default amount of time in milliseconds before a client is disconnected if nothing is received from it.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.MaxClients">
+            <summary>
+            Get or set the maximum amount of clients the server will unconditionally accept.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.BufferSize">
+            <summary>
+            Get the buffer size for reading messages. Default : TcpClientInfo.BUFFERSIZE
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.Clients">
+            <summary>
+            A collection of currently connected clients.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.SSLServerCertificate">
+            <summary>
+            The certificate to use for SSL connections. Setting this to non-null shall activate SSL.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.ObtainFullPackets">
+            <summary>
+            Get or set weither packets are buffered in memory. If the event ReceivedFull is non-null, this is ignored. Only useful in the case that you are overriding OnReceiveFull.
+            </summary>
+        </member>
+        <member name="P:AltarNet.TcpServerHandler.IsLengthInOneFrame">
+            <summary>
+            Get or set weither the length of a packet is combined into one with the data.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.ReceivedFragment">
+            <summary>
+            Called when a fragment of a packet is received.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.ReceivedFull">
+            <summary>
+            Called when a packet is completed and is desired to be received whole.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.Connected">
+            <summary>
+            Called when a new connection is made.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.Disconnected">
+            <summary>
+            Called when a client is disconnected.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.ReceiveError">
+            <summary>
+            Called when an error occur while receiving messages.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.SslError">
+            <summary>
+            Called when an error occur while starting an SSL connection.
+            </summary>
+        </member>
+        <member name="E:AltarNet.TcpServerHandler.MaxClientsReached">
+            <summary>
+            Called when the maximum amount of clients is reached.
+            </summary>
+        </member>
+        <member name="T:AltarNet.ThreadSafeHelper">
+            <summary>
+            Represent an helper class for thread safety. This one is static and only deal with string keys.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper.Wait(System.String)">
+            <summary>
+            This will wait until the ressource labelled as 'key' is freed, then lock on it.
+            </summary>
+            <param name="key">The key to wait on</param>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper.WaitAsync(System.String)">
+            <summary>
+            This will wait until the ressource labelled as 'key' is freed, then lock on it.
+            </summary>
+            <param name="key">The key to wait on</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper.Release(System.String)">
+            <summary>
+            This will release the ressource labelled as 'key'.
+            </summary>
+            <param name="key">The key to release</param>
+        </member>
+        <member name="T:AltarNet.ThreadSafeHelper`1">
+            <summary>
+            Represent an helper class for thread safety. It accept equatable keys, such as int, byte, string, etc.
+            </summary>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper`1.#ctor">
+            <summary>
+            Create a ThreadSafeHelper/
+            </summary>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper`1.Wait(`0)">
+            <summary>
+            This will wait until the ressource labelled as 'key' is freed, then lock on it.
+            </summary>
+            <param name="key">The key to wait on</param>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper`1.WaitAsync(`0)">
+            <summary>
+            This will wait until the ressource labelled as 'key' is freed, then lock on it.
+            </summary>
+            <param name="key">The key to wait on</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.ThreadSafeHelper`1.Release(`0)">
+            <summary>
+            This will release the ressource labelled as 'key'.
+            </summary>
+            <param name="key">The key to release</param>
+        </member>
+        <member name="T:AltarNet.UdpHandler">
+            <summary>
+            Create an UDP client, for listening and sending packets.
+            </summary>
+        </member>
+        <member name="M:AltarNet.UdpHandler.#ctor(System.Net.IPEndPoint,System.Boolean)">
+            <summary>
+            Construct an UDP client, listening on an endpoint and starting to listen now (or not).
+            </summary>
+            <param name="listenIPendp">The endpoint to listen to</param>
+            <param name="startListening">If true, will call Listen(true)</param>
+        </member>
+        <member name="M:AltarNet.UdpHandler.Send(System.Byte[],System.Net.IPEndPoint,System.Int32)">
+            <summary>
+            Send a packet of informations to the specified endpoint.
+            </summary>
+            <param name="data">The information to send</param>
+            <param name="to">The endpoint who's the packet is sent to</param>
+            <param name="length">Optional, specify the portion of the data that is sent</param>
+        </member>
+        <member name="M:AltarNet.UdpHandler.SendAsync(System.Byte[],System.Net.IPEndPoint,System.Int32)">
+            <summary>
+            Send a packet of informations to the specified endpoint.
+            </summary>
+            <param name="data">The information to send</param>
+            <param name="to">The endpoint who's the packet is sent to</param>
+            <param name="length">Optional, specify the portion of the data that is sent</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="M:AltarNet.UdpHandler.Listen(System.Boolean)">
+            <summary>
+            Start or stop listening for new packets.
+            </summary>
+            <param name="state">True = Start, False = stop</param>
+        </member>
+        <member name="M:AltarNet.UdpHandler.OnReceive(System.Net.Sockets.UdpReceiveResult)">
+            <summary>
+            Overrideable. Called when a packet is received.
+            </summary>
+            <param name="response">The packet</param>
+        </member>
+        <member name="M:AltarNet.UdpHandler.Dispose">
+            <summary>
+            Dispose of the client, stopping it if it's listening.
+            </summary>
+        </member>
+        <member name="P:AltarNet.UdpHandler.ListenEndPoint">
+            <summary>
+            Get the endpoint of which we listening from.
+            </summary>
+        </member>
+        <member name="P:AltarNet.UdpHandler.IsDisposed">
+            <summary>
+            Get the disposed state of the object.
+            </summary>
+        </member>
+        <member name="P:AltarNet.UdpHandler.IsListening">
+            <summary>
+            Get the listening state of the client.
+            </summary>
+        </member>
+        <member name="P:AltarNet.UdpHandler.Client">
+            <summary>
+            Get the socket.
+            </summary>
+        </member>
+        <member name="E:AltarNet.UdpHandler.Received">
+            <summary>
+            Called when a packet is received.
+            </summary>
+        </member>
+        <member name="T:AltarNet.UdpPacketReceivedEventArgs">
+            <summary>
+            This object is used to represent the message received from an UDP client.
+            </summary>
+        </member>
+        <member name="M:AltarNet.UdpPacketReceivedEventArgs.#ctor(System.Net.Sockets.UdpReceiveResult)">
+            <summary>
+            Create an UDP response.
+            </summary>
+            <param name="resp">The UDP response</param>
+        </member>
+        <member name="P:AltarNet.UdpPacketReceivedEventArgs.Response">
+            <summary>
+            The UDP response.
+            </summary>
+        </member>
+    </members>
+</doc>

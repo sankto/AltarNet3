@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltarNet3", "AltarNet3\AltarNet3.csproj", "{63679C5F-A043-4D5C-B909-09842A9FD15D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltarNet3Testing", "AltarNet3Testing\AltarNet3Testing.csproj", "{0C2AF763-9C69-4AB2-897F-797098844F61}"
+EndProject
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "DocMaker", "DocMaker\DocMaker.shfbproj", "{0419C7A4-1068-4D2C-A293-D2FC27DB2093}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63679C5F-A043-4D5C-B909-09842A9FD15D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63679C5F-A043-4D5C-B909-09842A9FD15D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63679C5F-A043-4D5C-B909-09842A9FD15D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63679C5F-A043-4D5C-B909-09842A9FD15D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C2AF763-9C69-4AB2-897F-797098844F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C2AF763-9C69-4AB2-897F-797098844F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C2AF763-9C69-4AB2-897F-797098844F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C2AF763-9C69-4AB2-897F-797098844F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0419C7A4-1068-4D2C-A293-D2FC27DB2093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0419C7A4-1068-4D2C-A293-D2FC27DB2093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0419C7A4-1068-4D2C-A293-D2FC27DB2093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0419C7A4-1068-4D2C-A293-D2FC27DB2093}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
